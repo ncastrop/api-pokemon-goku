@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>API Pokémon y Goku</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: linear-gradient(180deg, #e3f2fd, #fff);
+            text-align: center;
+            padding: 40px;
+        }
+        h1 {
+            color: #1976d2;
+        }
+        input, button {
+            padding: 10px;
+            margin: 10px;
+            border-radius: 8px;
+            border: 1px solid #ccc;
+        }
+        button {
+            background-color: #1976d2;
+            color: white;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #0d47a1;
+        }
+        img {
+            width: 200px;
+            margin-top: 20px;
+        }
+        .resultado {
+            margin-top: 20px;
+            font-size: 18px;
+        }
+    </style>
+</head>
+<body>
+    <h1>API Pokémon y Goku</h1>
+
+    <div>
+        <h2>Buscar Pokémon</h2>
+        <input type="text" id="pokemonName" placeholder="Ej: pikachu">
+        <button onclick="buscarPokemon()">Buscar</button>
+        <div id="pokemonResultado" class="resultado"></div>
+    </div>
+
+    <hr>
+
+    <div>
+        <h2>Ver información de Goku</h2>
+        <button onclick="buscarGoku()">Ver Goku</button>
+        <div id="gokuResultado" class="resultado"></div>
+    </div>
+
+    <script>
+        async function buscarPokemon() {
+            const nombre = document.getElementById('pokemonName').value.toLowerCase();
+            const contenedor = document.getElementById('pokemonResultado');
+            contenedor.innerHTML = "Cargando...";
+
+            try {
+                const res = await fetch(`https://pokeapi.co/api/v2/pokemon/${nombre}`);
+                if (!res.ok) throw new Error("Pokémon no encontrado");
+                const data = await res.json();
+                contenedor.innerHTML = `
+                    <p><b>Nombre:</b> ${data.name}</p>
+                    <p><b>Altura:</b> ${data.height}</p>
+                    <p><b>Peso:</b> ${data.weight}</p>
+                    <img src="${data.sprites.front_default}" alt="${data.name}">
+                `;
+            } catch (error) {
+                contenedor.innerHTML = `<p style="color:red;">${error.message}</p>`;
+            }
+        }
+
+        async function buscarGoku() {
+            const contenedor = document.getElementById('gokuResultado');
+            contenedor.innerHTML = "Cargando...";
+
+            try {
+                const res = await fetch("https://dragonball-api.com/api/characters");
+                const data = await res.json();
+                const goku = data.items.find(p => p.name.toLowerCase().includes("goku"));
+                if (!goku) throw new Error("No se encontró información de Goku");
+                contenedor.innerHTML = `
+                    <p><b>Nombre:</b> ${goku.name}</p>
+                    <p><b>Raza:</b> ${goku.race}</p>
+                    <p><b>Ki:</b> ${goku.ki}</p>
+                    <p><b>Max Ki:</b> ${goku.maxKi}</p>
+                    <img src="${goku.image}" alt="${goku.name}">
+                `;
+            } catch (error) {
+                contenedor.innerHTML = `<p style="color:red;">${error.message}</p>`;
+            }
+        }
+    </script>
+</body>
+</html>
